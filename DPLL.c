@@ -2,40 +2,49 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "features.h"
-#include "vitals.h"
-#include "heuristics.h"
+#include "src/features.h"
+#include "src/vitals.h"
+#include "src/heuristics.h"
 
 //---MAIN ALGORITHM---//
 int* DPLL(int** cnf, int* current, int* initial);
 
 int START_TIME;
-int HEURISTIC_ID;
+int HEURISTIC_ID = 3;
 char* CNF_FILE_NAME;
+
 int main(int argc, char** argv){
-    if(argc < 3){
-    	printf("Nie podano wszystkich argumentow - [file_name] [heuristic_id]\n");
-    	return 1;
+    if(argc < 2){
+    	printf("File Unspecified\n");
+    	return -1;
 	}
+
     srand(time(NULL));
     START_TIME = time(NULL);
+
     CNF_FILE_NAME = argv[1];
-    HEURISTIC_ID = atoi( argv[2] );
+    if(argc == 3){
+        HEURISTIC_ID = atoi( argv[2] );
+    }
 
     int** cnf = read_cnf_from_file(CNF_FILE_NAME);
-    //print_formula(cnf, 0);
+    if(!cnf){
+        printf("Error while reading file\n");
+        return -1;
+    }
+
     int vars = cnf[0][0];
     int* cu = malloc(4); cu[0]=0;
     int* in = malloc(4); in[0]=0;
-    //print_array(in);
     int* solution = DPLL(cnf,cu,in);
     return_solution(solution, vars);
     printf("c time elapsed: %ld\n", time(NULL) - START_TIME);
     free(solution);
+    return 0;
 }
 
 //--$$--DONE--$$--// -- // MEMORY STABLE //
-int* DPLL(int** cnf, int* current, int* initial){
+int *DPLL(int **cnf, int *current, int *initial) {
     reduce(cnf, initial);
     current = concat(current, initial);
     int* units = NULL;
@@ -71,12 +80,12 @@ int* DPLL(int** cnf, int* current, int* initial){
         }
     }
     if(SAT){
-        erase_formula(cnf,0); 
+        erase_formula(cnf,0);
         return current;
     }
     if(UNSAT){
         free(current);
-        erase_formula(cnf,0); 
+        erase_formula(cnf,0);
         return NULL;
     }
 
@@ -90,7 +99,7 @@ int* DPLL(int** cnf, int* current, int* initial){
     }
 
     int variable = heuristic(cnf);
-    
+
     int** cnf_c = copy_cnf(cnf);
     int*  current_c  = malloc( (current[0]+1)*sizeof(int) );
     memcpy(current_c, current, (current[0]+1)*sizeof(int) );
@@ -105,7 +114,7 @@ int* DPLL(int** cnf, int* current, int* initial){
         free(current_c);
         erase_formula(cnf_c,0);
         return solution;
-    } 
+    }
     else{
         int* assumption = (int*)malloc(2 * sizeof(int));
         assumption[0] = 1;

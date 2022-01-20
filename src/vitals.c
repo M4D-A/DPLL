@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <ctype.h> //isdigit()
 #include <string.h>
-#include <time.h>
 #include "features.h"
 #include "vitals.h"
 
@@ -338,6 +337,5 @@ void return_solution(int* solution, int variables){
         printf("s UNSATISFIABLE\n");
         printf("c\n");
         printf("c---------------\n");
-
     }
 }
