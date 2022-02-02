@@ -58,12 +58,10 @@ int *DPLL(int **cnf, int *current, int *initial) {
             erase_formula(cnf,0);
             return NULL;
         }
-        //{printf("un\n");print_array(units);}
         reduce(cnf, units);
         units_size = units[0];
         current = concat(current, units);
         units = NULL;
-        //{printf("pu\n");print_array(pures);}
         pures = find_pures(cnf);
         reduce(cnf, pures);
         pures_size = pures[0];
